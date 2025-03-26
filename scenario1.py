@@ -63,7 +63,7 @@ if __name__ == "__main__":
             {
                 "id" : i,
                 "workUnits" : truncnorm.rvs(0, 20, loc=5, scale=0.5),
-                "arrivalTime" : np.random.uniform(0, 8)
+                "arrivalTime" : np.random.uniform(0, NUM_WORKDAY_HOURS)
             }
             for i in range(0, NUM_CUSTOMERS)
         ]
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
                 # Check if customers are waiting to be served
                 if not customerQueue.empty():
-                    if currEvent.time <= 8:
+                    if currEvent.time <= NUM_WORKDAY_HOURS:
                         customer = customerQueue.get()
                         customerId = customer["customerId"]
 

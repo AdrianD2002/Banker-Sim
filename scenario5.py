@@ -12,12 +12,14 @@ from scipy.stats import truncnorm # type: ignore
 
 ##################################### Constants (change per scenario)
 
-# SCENARIO THREE: One more window
+# SCENARIO FIVE (CUSTOM): 1.6 less working hours, but 140% efficiency
+# Loosely analagous to Microsoft Japan 4-day work week study that showed a 40% increase in employee sales:
+# https://www.theverge.com/2019/11/5/20949366/microsoft-japan-four-day-working-week-trial-pilot-program-productivity-improvement-cost-decrease
 
-NUM_WINDOWS = 11
-WINDOW_EFFICIENCY = 10
+NUM_WINDOWS = 10
+WINDOW_EFFICIENCY = 14
 NUM_CUSTOMERS = 160
-NUM_WORKDAY_HOURS = 8
+NUM_WORKDAY_HOURS = 6.4
 
 #####################################
 
