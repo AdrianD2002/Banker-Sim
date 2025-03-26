@@ -12,9 +12,9 @@ from scipy.stats import truncnorm # type: ignore
 
 ##################################### Constants (change per scenario)
 
-NUM_WINDOWS = 10
+NUM_WINDOWS = 2
 WINDOW_EFFICIENCY = 10
-NUM_CUSTOMERS = 160
+NUM_CUSTOMERS = 10
 NUM_WORKDAY_HOURS = 8
 
 #####################################
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         {
             "id" : i,
             "workUnits" : truncnorm.rvs(0, 20, loc=5, scale=0.5),
-            "arrivalTime" : np.random.uniform(0, NUM_WORKDAY_HOURS)
+            "arrivalTime" : np.random.uniform(0, 8)
         }
         for i in range(0, NUM_CUSTOMERS)
     ]
