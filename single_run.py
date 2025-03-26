@@ -12,11 +12,9 @@ from scipy.stats import truncnorm # type: ignore
 
 ##################################### Constants (change per scenario)
 
-# SCENARIO ONE: Default configuration from slides
-
-NUM_WINDOWS = 1
+NUM_WINDOWS = 10
 WINDOW_EFFICIENCY = 10
-NUM_CUSTOMERS = 10
+NUM_CUSTOMERS = 160
 NUM_WORKDAY_HOURS = 8
 
 #####################################
