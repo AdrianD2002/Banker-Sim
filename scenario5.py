@@ -20,6 +20,7 @@ NUM_WINDOWS = 10
 WINDOW_EFFICIENCY = 14
 NUM_CUSTOMERS = 160
 NUM_WORKDAY_HOURS = 6.4
+NUM_RUNS = 10000
 
 #####################################
 
@@ -55,12 +56,10 @@ if __name__ == "__main__":
     custServed = 0
     waitTimeSum = 0
 
-    # Test with 1,000 runs
-    for i in range(0,1000):
+    for i in range(0,NUM_RUNS):
         print(f"Run # {i + 1}")
         customerQueue = Queue()
 
-        # Generate the 160 customers
         customers = [
             {
                 "id" : i,
@@ -148,6 +147,6 @@ if __name__ == "__main__":
             currTime = currEvent.time
 
     averageWaitTime = waitTimeSum / custServed
-    averageCustomersServed = int(custServed / 1000)
-    print(f"\nAverage wait time over 1,000 runs: {averageWaitTime} hours")
-    print(f"Average customers served: {averageCustomersServed}/160")
+    averageCustomersServed = int(custServed / NUM_RUNS)
+    print(f"\nAverage wait time: {averageWaitTime} hours")
+    print(f"Average customers served: {averageCustomersServed}/{NUM_CUSTOMERS}")

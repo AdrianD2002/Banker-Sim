@@ -10,9 +10,14 @@ from scipy.stats import truncnorm # type: ignore
 # Customers that arrive or are still in queue after hour 8 will be ignored.
 # Jobs in process will still be completed even if the job finishes after hour 8, so long as they were started before closing.
 
+## FOR THIS SCENARIO ONLY:
+# Light work is defined as a workload that is less than 5.3 work units.
+# The tellers will ALWAYS serve customers with light work first; i.e., if the light-work queue is NOT empty, they will be
+#     served over customers in the regular work queue. This is (ostensibly) more akin to real-life implementations.
+
 ##################################### Constants (change per scenario)
 
-# SCENARIO ONE: Default configuration from slides
+# SCENARIO FOUR: Separate small-work priority queue
 
 NUM_WINDOWS = 10
 WINDOW_EFFICIENCY = 10
@@ -57,6 +62,7 @@ if __name__ == "__main__":
     for i in range(0,NUM_RUNS):
         print(f"Run # {i + 1}")
         customerQueue = Queue()
+        customerQueueLW = Queue()
 
         customers = [
             {
@@ -75,11 +81,10 @@ if __name__ == "__main__":
             newEvent = Event("customerArrival", customer["arrivalTime"], {"workUnits" : customer["workUnits"], "customerId" : customer["id"]})
             eventQueue.push(newEvent)
 
-
         currTime = 0
 
         # Run through events
-        while currTime <= NUM_WORKDAY_HOURS and eventQueue.is_empty() == False:
+        while currTime <= NUM_WORKDAY_HOURS and not eventQueue.is_empty():
             currEvent = eventQueue.pop()
             #print()
             # print(f"\nTime: {currEvent.time}")
@@ -92,6 +97,7 @@ if __name__ == "__main__":
 
             if currEvent.event == "customerArrival":
                 #print(f"- Customer ID {currEvent.args["customerId"]} has arrived at the bank at time = {currEvent.time}")
+                #print(f"    - Workload is {currEvent.args["workUnits"]}")
                 try:
                     openWindow = state.windows.index(0) # Look for an open window
                 except ValueError:                      # No open windows found (index just throws an error when the element isn't in list)
@@ -107,7 +113,11 @@ if __name__ == "__main__":
                     eventQueue.push(newEvent)
                 else:
                     #print(f"    - No open windows, customer ID {currEvent.args["customerId"]} put into queue.")
-                    customerQueue.put({"customerId" : currEvent.args["customerId"], "arrivalTime" : currEvent.time})
+                    if currEvent.args["workUnits"] <= 5.3:
+                        #print(f"    - Low workload; put into LW queue.")
+                        customerQueueLW.put({"customerId" : currEvent.args["customerId"], "arrivalTime" : currEvent.time})          ## NEW IMPLEMENTATION FOR LW QUEUE
+                    else:
+                        customerQueue.put({"customerId" : currEvent.args["customerId"], "arrivalTime" : currEvent.time})
 
             elif currEvent.event == "jobFinish":
                 #print(f"- Job for customer ID {currEvent.args["customerId"]} finished at time = {currEvent.time}")
@@ -117,9 +127,15 @@ if __name__ == "__main__":
                 custServed += 1
 
                 # Check if customers are waiting to be served
-                if not customerQueue.empty():
+                if not customerQueue.empty() or not customerQueueLW.empty():
                     if currEvent.time <= NUM_WORKDAY_HOURS:
-                        customer = customerQueue.get()
+
+                        if not customerQueueLW.empty():                     ## NEW IMPLEMENTATION FOR LW QUEUE
+                            #print(f"    - LW queue non-empty, prioritizing over regular queue.")
+                            customer = customerQueueLW.get()
+                        else:
+                            customer = customerQueue.get()
+                        
                         customerId = customer["customerId"]
 
                         waitTime = currEvent.time - customer["arrivalTime"]
@@ -141,7 +157,7 @@ if __name__ == "__main__":
                     state.windows[jobWindow] = 0
                     #print("    - No customers in queue, waiting for next customer to arrive at the bank.")
 
-            #print(f"Queue after event:\n {[(event.event, event.time) for event in eventQueue.queue]}")
+            # print(f"Queue after event:\n {[(event.event, event.time) for event in eventQueue.queue]}")
             currTime = currEvent.time
 
     averageWaitTime = waitTimeSum / custServed

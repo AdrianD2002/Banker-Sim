@@ -87,6 +87,7 @@ if __name__ == "__main__":
 
         if currEvent.event == "customerArrival":
             print(f"- Customer ID {currEvent.args["customerId"]} has arrived at the bank at time = {currEvent.time}")
+            print(f"    - Workload is {currEvent.args["workUnits"]}")
             try:
                 openWindow = state.windows.index(0) # Look for an open window
             except ValueError:                      # No open windows found (index just throws an error when the element isn't in list)
